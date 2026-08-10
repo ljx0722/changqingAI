@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>长晴AI - 点亮未来，赋能成长</title>
+<meta name="description" content="长晴AI — 全人群AIGC综合服务生态平台。AI错题集、论文搭子、智能网页平台等自研工具，覆盖K12亲子科创、高校学术、企业品牌AI营销。"/>
+<style>
+:root{--bg:#0d0b1e;--bg2:#1a1740;--ink:#f0e6ff;--ink2:#9890b8;--accent:#FFB347;--orange:#FF6B35;--blue:#4A90D9;--green:#00C9A7;--purple:#8B5CF6;--cyan:#06B6D4;--font:'PingFang SC','Noto Sans SC','Microsoft YaHei',system-ui,sans-serif}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:linear-gradient(var(--orange),var(--accent));border-radius:2px}
+::selection{background:rgba(255,179,71,.3);color:#fff}
+
+/* Progress bar */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:100;background:rgba(255,179,71,.08)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--accent));transition:width .15s ease-out;box-shadow:0 0 10px rgba(255,179,71,.4)}
+
+/* Nav */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:14px clamp(16px,5vw,48px);gap:16px;transition:background .3s}
+.topbar.scrolled{background:rgba(13,11,30,.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,179,71,.1)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--orange),var(--accent));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;box-shadow:0 2px 12px rgba(255,107,53,.3)}
+.brand-name{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:.5px}
+.nav-links{display:flex;gap:4px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border-radius:999px;padding:4px;border:1px solid rgba(255,255,255,.08)}
+.nav-links a{font-size:13px;color:var(--ink2);text-decoration:none;padding:6px 14px;border-radius:999px;transition:all .2s;font-weight:500}
+.nav-links a:hover,.nav-links a.active{color:#fff;background:var(--orange)}
+.nav-cta{text-decoration:none;font-weight:600;font-size:13px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--accent));padding:10px 20px;border-radius:999px;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 14px rgba(255,107,53,.25);white-space:nowrap}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(255,107,53,.4)}
+@media(max-width:768px){.nav-links{display:none}.topbar{padding:10px 16px}}
+
+/* Scene container */
+.scenes{position:fixed;inset:0;z-index:0;overflow:hidden}
+.scene{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;display:flex;align-items:center;justify-content:center}
+.scene.active{opacity:1}.scene.prev{opacity:.3}
+.scene-bg{position:absolute;inset:-10%;background-size:cover;background-position:center 42%;will-change:transform;filter:saturate(1.05) brightness(1.02)}
+.scene-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 50%,rgba(13,11,30,.7) 100%)}
+.scene-gradient{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,11,30,.2) 0%,transparent 30%,transparent 70%,rgba(13,11,30,.5) 100%)}
+
+/* Scene glow accents */
+.scene-glow{position:absolute;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:.15;pointer-events:none;transition:all .8s ease}
+
+/* Copy overlay */
+.copy-layer{position:fixed;z-index:20;pointer-events:none;left:clamp(18px,5vw,64px);top:50%;transform:translateY(-50%);width:min(42vw,460px);transition:opacity .5s ease}
+.copy-layer.hidden{opacity:0}
+.copy-num{font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.12em;color:var(--accent);opacity:.7}
+.copy-eyebrow{display:block;margin-top:12px;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
+.copy-title{font-weight:800;font-size:clamp(1.8rem,3.8vw,3.2rem);line-height:1.06;color:var(--ink);margin:8px 0 0;letter-spacing:-.01em;text-shadow:0 2px 30px rgba(0,0,0,.6);white-space:pre-line}
+.copy-body{margin-top:14px;font-size:clamp(.9rem,1.15vw,1.05rem);line-height:1.65;color:rgba(240,230,255,.72);max-width:38ch;text-shadow:0 1px 20px rgba(0,0,0,.5)}
+.copy-tags{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;padding:0}
+.copy-tags li{font-size:12px;font-weight:600;padding:6px 13px;border-radius:999px;background:rgba(255,179,71,.1);border:1px solid rgba(255,179,71,.2);color:var(--accent);backdrop-filter:blur(4px)}
+.copy-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;pointer-events:auto}
+.cta-primary{text-decoration:none;font-weight:600;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--accent));padding:13px 26px;border-radius:999px;transition:transform .2s;display:inline-block}
+.cta-secondary{text-decoration:none;font-weight:600;font-size:14px;color:var(--ink);border:1.5px solid rgba(255,255,255,.2);padding:13px 26px;border-radius:999px;transition:transform .2s;display:inline-block}
+.cta-primary:hover,.cta-secondary:hover{transform:translateY(-2px)}
+
+/* Route nav */
+.route{position:fixed;right:clamp(10px,2vw,24px);top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:16px;padding:12px 6px;background:rgba(13,11,30,.25);backdrop-filter:blur(6px);border-radius:999px;border:1px solid rgba(255,255,255,.05)}
+.route-line{position:absolute;left:50%;top:16px;bottom:16px;width:1.5px;transform:translateX(-50%);background:rgba(255,179,71,.2)}
+.route-dot{position:relative;border:0;background:0;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;z-index:1}
+.route-dot i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.route-dot.active i{width:10px;height:10px;background:var(--accent);box-shadow:0 0 12px rgba(255,179,71,.5)}
+.route-label{position:absolute;right:22px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:10px;font-weight:600;color:var(--accent);opacity:0;transition:opacity .25s;pointer-events:none}
+.route-dot.active .route-label{opacity:1}
+
+/* Scroll hint */
+.hint{position:fixed;left:50%;bottom:24px;z-index:30;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);transition:opacity .3s;pointer-events:none}
+.hint-wheel{width:20px;height:30px;border-radius:11px;border:2px solid rgba(255,179,71,.25);position:relative}
+.hint-wheel::after{content:'';position:absolute;left:50%;top:5px;width:3px;height:6px;border-radius:2px;background:var(--accent);transform:translateX(-50%);animation:wheel 1.7s ease-in-out infinite}
+@keyframes wheel{0%{opacity:0;top:5px}40%{opacity:1}100%{opacity:0;top:15px}}
+
+/* Contact form */
+.contact-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .5s}
+.contact-overlay.show{opacity:1;pointer-events:auto}
+.contact-card{width:min(440px,92vw);padding:32px;border-radius:18px;background:rgba(26,20,60,.88);backdrop-filter:blur(24px);border:1px solid rgba(255,179,71,.12);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.form-tabs{display:flex;gap:6px;margin-bottom:22px;justify-content:center;flex-wrap:wrap}
+.form-tab{padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:0;color:var(--ink2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.form-tab.sel{border-color:transparent;background:linear-gradient(135deg,var(--orange),var(--accent));color:#fff}
+.form-inp{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#fff;font-size:13px;outline:0;font-family:inherit;width:100%;margin-bottom:10px;transition:border .2s}
+.form-inp:focus,.form-sel:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(255,179,71,.1)}
+.form-sel{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#fff;font-size:13px;outline:0;font-family:inherit;width:100%;margin-bottom:10px;cursor:pointer;appearance:none}
+.form-submit{width:100%;padding:14px;border-radius:12px;border:0;background:linear-gradient(135deg,var(--orange),var(--accent));color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s;font-family:inherit;margin-top:4px}
+.form-submit:hover{transform:translateY(-1px)}
+.success-msg{text-align:center;padding:20px 0}
+.success-msg h3{font-size:20px;color:#fff;margin-bottom:6px}
+.success-msg p{color:var(--ink2);font-size:13px}
+
+/* Footer */
+.footer{position:fixed;bottom:0;left:0;right:0;z-index:25;padding:16px clamp(18px,5vw,48px);display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.04);background:rgba(13,11,30,.85);backdrop-filter:blur(8px);opacity:0;transition:opacity .3s;pointer-events:none}
+.footer.show{opacity:1;pointer-events:auto}
+.footer-brand{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2)}
+.footer-links{display:flex;gap:18px}.footer-links a{font-size:12px;color:var(--ink2);text-decoration:none}
+
+/* Track for scrollbar */
+.track{position:relative;z-index:1;width:100%;pointer-events:none}
+
+/* Mobile */
+@media(max-width:860px){
+  .copy-layer{left:clamp(16px,5vw,32px);right:clamp(16px,5vw,32px);top:auto;bottom:clamp(50px,15dvh,100px);transform:none;width:auto;max-width:560px}
+  .copy-layer::before{content:'';position:fixed;inset:0;background:linear-gradient(0deg,var(--bg) 8%,rgba(13,11,30,.7) 40%,transparent 70%);z-index:-1}
+  .copy-title{font-size:clamp(1.6rem,6.5vw,2.2rem)}
+  .copy-body{font-size:clamp(.88rem,3.2vw,.98rem);max-width:none}
+  .scene-bg{background-position:center 46%}
+  .route{gap:12px;right:4px}.route-label{display:none}
+}
+@media(hover:none) and (pointer:coarse){.route-dot{width:32px;height:32px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Top nav -->
+<nav class="topbar" id="topbar">
+  <a href="#" class="brand"><span class="brand-mark">长</span><span class="brand-name">长晴AI</span></a>
+  <div class="nav-links" id="nav">
+    <a href="#hero">首页</a><a href="#pain">方案</a><a href="#products">产品</a><a href="#courses">课程</a><a href="#cases">案例</a><a href="#team">团队</a><a href="#contact">联系</a>
+  </div>
+  <a href="#contact-form" class="nav-cta" onclick="jumpTo(6)">立即咨询</a>
+</nav>
+
+<!-- Scene background images -->
+<div class="scenes" id="scenes"></div>
+
+<!-- Copy overlay -->
+<div class="copy-layer hidden" id="copyLayer"></div>
+
+<!-- Route nav -->
+<div class="route" id="route"><div class="route-line"></div></div>
+
+<!-- Scroll hint -->
+<div class="hint" id="hint"><span>向下滚动探索</span><div class="hint-wheel"></div></div>
+
+<!-- Contact form -->
+<div class="contact-overlay" id="contactOverlay">
+  <div class="contact-card" id="contactCard"></div>
+</div>
+
+<!-- Footer -->
+<footer class="footer" id="footer">
+  <div class="footer-brand"><span class="brand-mark" style="width:22px;height:22px;font-size:12px;border-radius:6px">长</span>&copy; 2026 长晴AI</div>
+  <div class="footer-links"><a href="#">首页</a><a href="#">产品</a><a href="#">联系</a></div>
+</footer>
+
+<!-- Scroll track -->
+<div class="track" id="track"></div>
+
+<script>
+// ===================== Data =====================
+const SECTIONS = [
+  {id:'hero',label:'首页',accent:'#FF6B35',bg:'hero.webp',glow:'#FF6B35',
+   eyebrow:'全人群 AIGC 综合服务生态平台',title:'点亮未来，赋能成长',
+   body:'AIGC 工具 + 素养教学 + 企业 AI 产品交付\n授之以鱼，也授之以渔',
+   tags:['AI教育','自研工具','成品交付'],
+   cta:{primary:{label:'预约体验课',href:'#contact-form'},secondary:{label:'探索产品',href:'#products'}}},
+  {id:'pain',label:'方案',accent:'#4A90D9',bg:'pain.webp',glow:'#4A90D9',
+   eyebrow:'两端痛点，一站解决',title:'教育端 × 商业端\n双线闭环',
+   body:'企业缺一站式AI交付团队，教育端课程与工具割裂——长晴AI以自研工具底座+课程体系+成品交付形成完整闭环。',
+   tags:['六维闭环','授之以渔+授之以鱼']},
+  {id:'products',label:'产品',accent:'#FFB347',bg:'products.webp',glow:'#FFB347',
+   eyebrow:'自研 AI 工具矩阵',title:'五大核心产品',
+   body:'论文搭子 · 错题集 · 智能网页平台 · 手势实验岛 · 三维世界实验室——覆盖教学、学术、品牌全场景。',
+   tags:['论文搭子','错题集','智能网页','手势实验','3D世界']},
+  {id:'courses',label:'课程',accent:'#10B981',bg:'courses.webp',glow:'#10B981',
+   eyebrow:'六大 AIGC 科创课程',title:'从感知体验到\n项目实践',
+   body:'《"人工智能+教育"行动计划》教科信〔2026〕1号，分层递进标准化课程体系。',
+   tags:['AI微电影','AI建模','AI机器人','手势互动','虚拟助理','游戏开发']},
+  {id:'cases',label:'案例',accent:'#FFB347',bg:'cases.webp',glow:'#FFB347',
+   eyebrow:'服务 1200+ 人次 | 满课率 92%',title:'用成果说话',
+   body:'宋庆龄少年儿童发明奖国赛银奖、全球发明大会全国一等奖、多名学生入选"未来科学家"。',
+   tags:['竞赛成果','企业交付','渠道合作']},
+  {id:'team',label:'团队',accent:'#8B5CF6',bg:'team.webp',glow:'#8B5CF6',
+   eyebrow:'同济/复旦/上交 名校团队',title:'全栈技术+教育\n+商业',
+   body:'7人核心团队，独家IP——南天门计划、安全熊、LadyBoss女企业家平台。',
+   tags:['核心团队','南天门计划','安全熊','LadyBoss']},
+  {id:'contact',label:'联系',accent:'#FF6B35',bg:'contact.webp',glow:'#FF6B35',
+   eyebrow:'与长晴AI同行',title:'准备好启程了吗？',
+   body:'无论是体验课程、产品试用还是商务合作，我们都在这里。',
+   cta:{primary:{label:'立即咨询',href:'#contact-form'},secondary:{label:'了解更多',href:'#products'}}},
+];
+
+const SCROLL_PER_SECTION = 1.5; // vh per section dive
+const CONN_SCROLL = 0.5;       // vh per connector
+const N = SECTIONS.length;
+
+// ===================== Build DOM =====================
+const scenesEl = document.getElementById('scenes');
+const routeEl = document.getElementById('route');
+const copyLayer = document.getElementById('copyLayer');
+const trackEl = document.getElementById('track');
+const topbar = document.getElementById('topbar');
+const nav = document.getElementById('nav');
+const hint = document.getElementById('hint');
+const footer = document.getElementById('footer');
+const contactOverlay = document.getElementById('contactOverlay');
+const contactCard = document.getElementById('contactCard');
+const progressFill = document.getElementById('progressFill');
+
+// Scene background divs
+const sceneDivs = [];
+SECTIONS.forEach((s,i) => {
+  const div = document.createElement('div'); div.className = 'scene';
+  div.innerHTML = `
+    <div class="scene-bg" style="background-image:url(assets/${s.bg})"></div>
+    <div class="scene-glow" style="background:radial-gradient(circle,${s.glow}40,transparent 70%)"></div>
+    <div class="scene-vignette"></div>
+    <div class="scene-gradient"></div>
+  `;
+  scenesEl.appendChild(div);
+  sceneDivs.push(div);
+});
+
+// Route dots
+SECTIONS.forEach((s,i) => {
+  const dot = document.createElement('button'); dot.className = 'route-dot';
+  dot.innerHTML = `<i></i><span class="route-label">${s.label}</span>`;
+  dot.onclick = () => jumpTo(i);
+  routeEl.appendChild(dot);
+});
+
+// Nav links
+SECTIONS.forEach((s,i) => {
+  const a = nav.children[i];
+  if(a) a.onclick = (e) => { e.preventDefault(); jumpTo(i); };
+});
+
+// Copy HTML
+function renderCopy(i) {
+  const s = SECTIONS[i];
+  let h = `<span class="copy-num">${String(i+1).padStart(2,'0')} / ${String(N).padStart(2,'0')}</span>`;
+  if(s.eyebrow) h += `<span class="copy-eyebrow">${s.eyebrow}</span>`;
+  h += `<h2 class="copy-title">${s.title}</h2>`;
+  if(s.body) h += `<p class="copy-body">${esc(s.body)}</p>`;
+  if(s.tags) h += `<ul class="copy-tags">${s.tags.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+  if(s.cta) h += `<div class="copy-cta">${s.cta.primary?`<a class="cta-primary" href="${s.cta.primary.href}">${s.cta.primary.label}</a>`:''}${s.cta.secondary?`<a class="cta-secondary" href="${s.cta.secondary.href}">${s.cta.secondary.label}</a>`:''}</div>`;
+  copyLayer.innerHTML = h;
+}
+renderCopy(0);
+
+// Contact form
+function renderForm() {
+  contactCard.innerHTML = `
+    <div class="form-tabs">
+      <button class="form-tab sel" onclick="switchTab('trial',this)">预约体验课</button>
+      <button class="form-tab" onclick="switchTab('coop',this)">合作咨询</button>
+      <button class="form-tab" onclick="switchTab('product',this)">产品试用</button>
+    </div>
+    <div id="formFields"></div>
+  `;
+  showFormFields('trial');
+}
+function switchTab(t,btn) {
+  contactCard.querySelectorAll('.form-tab').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  showFormFields(t);
+}
+function showFormFields(t) {
+  const el = document.getElementById('formFields');
+  if(t==='trial') el.innerHTML = `<input class="form-inp" placeholder="学生姓名" required><input class="form-inp" placeholder="年级（如小学五年级）"><input class="form-inp" type="tel" placeholder="家长手机号" required><select class="form-sel"><option>选择课程</option><option>AI微电影</option><option>AI建模</option><option>AI机器人</option><option>AI粒子手势互动</option><option>AI虚拟形象助理</option><option>AI小游戏开发</option></select>`;
+  else if(t==='coop') el.innerHTML = `<input class="form-inp" placeholder="单位/机构名称" required><input class="form-inp" placeholder="联系人" required><input class="form-inp" type="tel" placeholder="联系电话" required><select class="form-sel"><option>合作类型</option><option>学校/教育机构</option><option>企业品牌合作</option><option>渠道合作</option><option>IP联名合作</option></select>`;
+  else el.innerHTML = `<input class="form-inp" placeholder="姓名" required><input class="form-inp" placeholder="手机号/邮箱" required><select class="form-sel"><option>选择试用产品</option><option>论文搭子</option><option>错题集</option><option>智能网页平台</option><option>手势实验岛</option><option>三维世界实验室</option></select>`;
+  el.innerHTML += `<button class="form-submit" onclick="submitForm()">提交</button>`;
+}
+function submitForm() {
+  contactCard.innerHTML = `<div class="success-msg"><div style="font-size:40px;margin-bottom:12px">🎉</div><h3>提交成功！</h3><p>我们将在24小时内与您联系。</p></div>`;
+  setTimeout(() => { contactOverlay.classList.remove('show'); setTimeout(renderForm,500); }, 3000);
+}
+renderForm();
+
+// ===================== Scroll Engine =====================
+let vh = window.innerHeight;
+let totalH = 0;
+let activeIndex = -1;
+let ticking = false;
+
+function layout() {
+  vh = window.innerHeight;
+  const segmentsPerScene = SCROLL_PER_SECTION;
+  const segmentsConn = CONN_SCROLL;
+  // dive + connector per scene (except last)
+  let segments = 0;
+  for(let i=0;i<N;i++) { segments += segmentsPerScene; if(i<N-1) segments += segmentsConn; }
+  totalH = segments * vh + vh * 0.5;
+  trackEl.style.height = totalH + 'px';
+  read();
+}
+
+// lingerEase: mid-scene slow, seams fast
+function lingerEase(x, L) {
+  if(L<=0) return x;
+  const c = x - 0.5;
+  return (1-L)*x + L*(4*c*c*c + 0.5);
+}
+
+function read() {
+  const y = window.scrollY;
+  const maxScroll = totalH - vh;
+  const progress = maxScroll > 0 ? Math.min(1, Math.max(0, y / maxScroll)) : 0;
+  progressFill.style.width = (progress*100) + '%';
+
+  // Determine active scene and its progress
+  const rawIdx = progress * N;
+  const si = Math.min(Math.floor(rawIdx), N-1);
+  const segStart = si / N;
+  const segEnd = (si+1) / N;
+  const raw = (progress - segStart) / (segEnd - segStart);
+  const sp = lingerEase(Math.min(1, Math.max(0, raw)), 0.45);
+
+  // Update scene visibility and transform
+  sceneDivs.forEach((div,i) => {
+    const dist = Math.abs(i - si - sp);
+    const isActive = i === si;
+    const isNear = dist < 1.2;
+
+    if(isActive || isNear) {
+      div.classList.add(isActive ? 'active' : 'prev');
+      div.classList.remove(isActive ? 'prev' : 'active');
+      // Ken Burns: subtle zoom + pan driven by scroll
+      const bg = div.querySelector('.scene-bg');
+      const zoom = 1.02 + (i===si ? sp * 0.06 : 0);
+      const panY = (i===si ? (sp - 0.5) * 3 : 0);
+      bg.style.transform = `scale(${zoom}) translateY(${panY}%)`;
+    } else {
+      div.classList.remove('active','prev');
+    }
+  });
+
+  // Copy layer visibility (peaks mid-section 0.2-0.8)
+  const copyOp = sp < 0.12 ? sp / 0.12 : sp > 0.88 ? (1-sp) / 0.12 : 1;
+  if(si !== activeIndex) {
+    activeIndex = si;
+    renderCopy(si);
+    // Update active route dot
+    routeEl.querySelectorAll('.route-dot').forEach((d,i) => d.classList.toggle('active', i===si));
+    // Update nav
+    nav.querySelectorAll('a').forEach((a,i) => a.classList.toggle('active', i===si));
+  }
+  copyLayer.classList.toggle('hidden', copyOp < 0.05);
+  copyLayer.style.opacity = copyOp;
+  copyLayer.style.transform = `translateY(calc(-50% + ${(sp-0.5)*3}vh))`;
+
+  // Hint fade
+  hint.style.opacity = Math.max(0, 1 - progress * 4);
+
+  // Topbar scrolled state
+  topbar.classList.toggle('scrolled', y > 80);
+
+  // Footer visibility (last scene)
+  const footerOp = si >= N-1 ? Math.min(1, (sp - 0.3) / 0.7) : 0;
+  footer.classList.toggle('show', footerOp > 0.1);
+  footer.style.opacity = Math.max(0, footerOp);
+
+  // Contact overlay (last scene)
+  const contactOp = si >= N-1 ? Math.min(1, (sp - 0.5) / 0.5) : 0;
+  if(contactOp > 0.5) contactOverlay.classList.add('show');
+  else contactOverlay.classList.remove('show');
+
+  ticking = false;
+}
+
+function raf() {
+  window.addEventListener('scroll', () => {
+    if(!ticking) { ticking = true; requestAnimationFrame(read); }
+  }, { passive: true });
+}
+raf();
+
+function jumpTo(i) {
+  const segStart = (i / N) * totalH;
+  const segMid = segStart + (totalH / N) * 0.3;
+  window.scrollTo({ top: segMid, behavior: 'smooth' });
+}
+
+// Resize handler (don't jump on URL bar)
+let lastW = window.innerWidth;
+function onResize() {
+  if(window.innerWidth !== lastW) { lastW = window.innerWidth; layout(); }
+}
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', layout);
+window.addEventListener('load', layout);
+layout();
+
+// Hash link handling
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#','');
+  const idx = SECTIONS.findIndex(s => s.id === hash);
+  if(idx >= 0) jumpTo(idx);
+});
+
+// Helpers
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+</script>
+</body>
+</html>

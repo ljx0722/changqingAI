@@ -1,0 +1,10 @@
+node_modules
+.DS_Store
+*.local
+.env
+work
+*.mjs
+*.js
+generator.html
+video-gen.js
+generate.mjs
