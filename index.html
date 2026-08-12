@@ -54,6 +54,26 @@ body{overflow-x:hidden}
 .cta-secondary{text-decoration:none;font-weight:600;font-size:14px;color:var(--ink);border:1.5px solid rgba(255,255,255,.2);padding:13px 26px;border-radius:999px;transition:transform .2s;display:inline-block}
 .cta-primary:hover,.cta-secondary:hover{transform:translateY(-2px)}
 
+/* Product works showcase */
+.product-showcase{position:fixed;z-index:24;right:clamp(68px,6vw,104px);top:50%;transform:translateY(-50%) translateX(24px);width:min(34vw,390px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease,transform .45s ease,visibility .45s}
+.product-showcase.show{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(-50%) translateX(0)}
+.product-showcase__head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:12px;padding:0 4px}
+.product-showcase__eyebrow{display:block;font-size:11px;line-height:1.2;letter-spacing:.14em;color:var(--accent);font-weight:700;text-transform:uppercase;margin-bottom:5px}
+.product-showcase__title{font-size:clamp(1.05rem,1.5vw,1.35rem);line-height:1.2;color:#fff;font-weight:750}
+.product-showcase__hint{font-size:10px;color:var(--ink2);white-space:nowrap}
+.product-list{display:grid;gap:10px}
+.product-card{position:relative;overflow:hidden;padding:15px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(31,25,67,.9),rgba(20,17,47,.74));backdrop-filter:blur(18px);border:1px solid color-mix(in srgb,var(--card-accent) 28%,rgba(255,255,255,.08));box-shadow:0 14px 35px rgba(0,0,0,.2);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.product-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--card-accent) 18%,transparent),transparent 48%);pointer-events:none}
+.product-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--card-accent) 58%,transparent);box-shadow:0 18px 42px rgba(0,0,0,.3)}
+.product-card__top{position:relative;display:flex;align-items:center;gap:12px}
+.product-card__icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;color:#fff;font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--card-accent),color-mix(in srgb,var(--card-accent) 56%,#fff));box-shadow:0 7px 18px color-mix(in srgb,var(--card-accent) 24%,transparent)}
+.product-card__name{font-size:15px;color:#fff;font-weight:750;line-height:1.2}
+.product-card__subtitle{display:block;margin-top:3px;color:color-mix(in srgb,var(--card-accent) 72%,#fff);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.product-card__desc{position:relative;margin-top:10px;color:rgba(240,230,255,.66);font-size:12px;line-height:1.55}
+.product-card__link{position:relative;margin-top:11px;display:inline-flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-size:12px;font-weight:700;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--card-accent) 82%,#251947);transition:transform .2s ease,filter .2s ease}
+.product-card__link:hover{transform:translateX(2px);filter:brightness(1.1)}
+.product-card__arrow{font-size:15px;line-height:1}
+
 /* Route nav */
 .route{position:fixed;right:clamp(10px,2vw,24px);top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:16px;padding:12px 6px;background:rgba(13,11,30,.25);backdrop-filter:blur(6px);border-radius:999px;border:1px solid rgba(255,255,255,.05)}
 .route-line{position:absolute;left:50%;top:16px;bottom:16px;width:1.5px;transform:translateX(-50%);background:rgba(255,179,71,.2)}
@@ -94,6 +114,24 @@ body{overflow-x:hidden}
   .copy-title{font-size:clamp(1.6rem,6.5vw,2.2rem)}
   .copy-body{font-size:clamp(.88rem,3.2vw,.98rem);max-width:none}
   .route{gap:12px;right:4px}.route-label{display:none}
+  .product-showcase{left:0;right:0;top:70px;width:auto;transform:translateY(-12px);padding:0 46px 0 16px;overflow:hidden}
+  .product-showcase.show{transform:translateY(0)}
+  .product-showcase__head{margin-bottom:8px;padding:0}
+  .product-showcase__title{font-size:1rem}
+  .product-showcase__hint{font-size:9px}
+  .product-list{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:1px 0 8px;scrollbar-width:none}
+  .product-list::-webkit-scrollbar{display:none}
+  .product-card{flex:0 0 min(76vw,300px);scroll-snap-align:start;padding:13px 14px}
+  .product-card__desc{font-size:11px;line-height:1.45;margin-top:8px}
+  .product-card__link{margin-top:9px;padding:7px 12px}
+}
+@media(max-width:520px){
+  .brand-sub{display:none}
+  .brand-logo{height:30px}
+  .product-showcase{top:62px}
+  .product-showcase__head{align-items:center}
+  .product-showcase__eyebrow{display:none}
+  .product-card{flex-basis:78vw}
 }
 @media(hover:none) and (pointer:coarse){.route-dot{width:32px;height:32px}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
@@ -112,6 +150,7 @@ body{overflow-x:hidden}
 <div class="stage" id="stage"></div>
 
 <div class="copy-layer hidden" id="cl"></div>
+<div class="product-showcase" id="productShowcase" aria-hidden="true"></div>
 <div class="route" id="rt"><div class="route-line"></div></div>
 <div class="hint" id="hint"><span>向下滚动探索</span><div class="hint-wheel"></div></div>
 
@@ -162,6 +201,24 @@ const SECTIONS = [
 const N = SECTIONS.length;
 const DIVE_VH = 1.6, CONN_VH = 0.5;
 
+const PRODUCT_WORKS = [
+  {
+    name:'论文搭子',subtitle:'Thesis Buddy',icon:'论',accent:'#8B5CF6',
+    description:'面向本硕博全阶段，覆盖选题、文献检索、知识图谱、分阶段写作、查错降重与答辩准备。',
+    url:'https://mycryjmnznhs.sealoshzh.site'
+  },
+  {
+    name:'手势实验',subtitle:'Gesture Lab',icon:'势',accent:'#10B981',
+    description:'通过摄像头识别手势，用动作驱动粒子和虚拟场景，体验实时人机交互与创意表达。',
+    url:'https://azncqrmjxtjw.sealoshzh.site'
+  },
+  {
+    name:'3D 世界',subtitle:'Video to 3D World',icon:'3D',accent:'#F59E0B',
+    description:'将二维视频转换成可探索的三维世界，体验从影像素材到沉浸式空间的智能生成。',
+    url:'https://video2gauss.sealoshzh.site'
+  }
+];
+
 // ===================== DOM =====================
 const stage = document.getElementById('stage');
 const cl = document.getElementById('cl');
@@ -174,6 +231,27 @@ const fc = document.getElementById('fc');
 const pf = document.getElementById('pf');
 const hint = document.getElementById('hint');
 const track = document.getElementById('track');
+const productShowcase = document.getElementById('productShowcase');
+
+productShowcase.innerHTML = `
+  <div class="product-showcase__head">
+    <div><span class="product-showcase__eyebrow">Live Products</span><h3 class="product-showcase__title">探索我们的作品</h3></div>
+    <span class="product-showcase__hint">点击进入产品 ↗</span>
+  </div>
+  <div class="product-list">
+    ${PRODUCT_WORKS.map(product => `
+      <article class="product-card" style="--card-accent:${product.accent}">
+        <div class="product-card__top">
+          <span class="product-card__icon">${product.icon}</span>
+          <div><h4 class="product-card__name">${product.name}</h4><span class="product-card__subtitle">${product.subtitle}</span></div>
+        </div>
+        <p class="product-card__desc">${product.description}</p>
+        <a class="product-card__link" href="${product.url}" target="_blank" rel="noopener noreferrer" aria-label="打开${product.name}">
+          立即体验 <span class="product-card__arrow">↗</span>
+        </a>
+      </article>
+    `).join('')}
+  </div>`;
 
 // Build scenes
 const scenes = [];
@@ -326,6 +404,11 @@ function read() {
   cl.classList.toggle('hidden', cop < 0.04);
   cl.style.opacity = cop;
   cl.style.transform = 'translateY(calc(-50% + ' + ((sp - 0.5) * 3) + 'vh))';
+
+  const productOpacity = si === 2 ? Math.min(1, Math.max(0, Math.min(sp / 0.18, (1 - sp) / 0.12))) : 0;
+  productShowcase.classList.toggle('show', productOpacity > 0.04);
+  productShowcase.style.opacity = productOpacity;
+  productShowcase.setAttribute('aria-hidden', productOpacity > 0.04 ? 'false' : 'true');
 
   hint.style.opacity = Math.max(0, 1 - progress * 4);
   tb.classList.toggle('scrolled', y > 80);
