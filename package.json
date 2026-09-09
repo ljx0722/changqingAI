@@ -1,13 +1,35 @@
 {
   "name": "changqing-ai-site",
-  "version": "1.0.0",
-  "description": "",
-  "main": "video-gen.js",
+  "version": "2.0.0",
+  "private": true,
+  "description": "长晴AI · 上海长序逢晴智能科技有限公司",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite --configLoader runner --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build --configLoader runner",
+    "preview": "vite preview --configLoader runner --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test scripts/*.test.ts scripts/*.test.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "module",
+  "dependencies": {
+    "lucide-react": "0.468.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.9",
+    "@types/three": "0.180.0",
+    "@vitejs/plugin-react": "5.0.2",
+    "esbuild": "0.25.12",
+    "jsdom": "26.1.0",
+    "prettier": "3.6.2",
+    "typescript": "5.9.2",
+    "vite": "7.3.6"
+  }
 }

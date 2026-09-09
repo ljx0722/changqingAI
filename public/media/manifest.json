@@ -1,0 +1,185 @@
+{
+  "processing": "仅从用户提供的 PPTX 提取；WebP quality 82，最大宽度 1200，不放大原图，不裁切，不改写内容。",
+  "assets": [
+    {
+      "file": "/media/film.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 25,
+      "sourceImage": "ppt/media/image74.png",
+      "description": "AI 微电影示例：油纸伞 · 一伞烟雨江南",
+      "recommendedUse": "AI 微电影课程 / 影像作品卡片",
+      "notes": "PPT 微电影页中的嵌入视频封面。",
+      "originalSize": [
+        1920,
+        1080
+      ],
+      "outputSize": [
+        1200,
+        675
+      ],
+      "bytes": 82266
+    },
+    {
+      "file": "/media/model.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 26,
+      "sourceImage": "ppt/media/image28.png",
+      "description": "三维人物作品：青色头饰女性侧面",
+      "recommendedUse": "AI 三维建模课程 / 团队三维创作能力",
+      "notes": "同一图也见第 5 页联合创始人作品。保留原有 Marmoset Toolbag 渲染水印。",
+      "originalSize": [
+        1920,
+        1080
+      ],
+      "outputSize": [
+        1200,
+        675
+      ],
+      "bytes": 47052
+    },
+    {
+      "file": "/media/robot.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 27,
+      "sourceImage": "ppt/media/image82.jpeg",
+      "description": "机器人编程实践：电脑与组装机器人",
+      "recommendedUse": "机器人课程 / 研学课程卡片",
+      "notes": "PPT 中的机器人课程示例配图，不单独推断拍摄地点或学员身份。",
+      "originalSize": [
+        656,
+        440
+      ],
+      "outputSize": [
+        656,
+        440
+      ],
+      "bytes": 39386
+    },
+    {
+      "file": "/media/gesture.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 28,
+      "sourceImage": "ppt/media/image85.jpeg",
+      "description": "手势追踪粒子实验：粒子手掌与摄像头画面",
+      "recommendedUse": "AI 粒子手势互动课程 / 实验展示",
+      "notes": "保留真实界面截图，不标为本次新开发互动截图。",
+      "originalSize": [
+        1760,
+        866
+      ],
+      "outputSize": [
+        1200,
+        590
+      ],
+      "bytes": 34996
+    },
+    {
+      "file": "/media/avatar.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 29,
+      "sourceImage": "ppt/media/image87.jpeg",
+      "description": "虚拟形象交互示例：Open LLM VTuber 教室场景",
+      "recommendedUse": "AI 虚拟形象助理课程卡片",
+      "notes": "显示第三方开源工具界面，不标为自研产品。",
+      "originalSize": [
+        2324,
+        1512
+      ],
+      "outputSize": [
+        1200,
+        781
+      ],
+      "bytes": 56144
+    },
+    {
+      "file": "/media/game.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 30,
+      "sourceImage": "ppt/media/image91.jpeg",
+      "description": "小游戏示例：星空中的机器人与关卡界面",
+      "recommendedUse": "AI 小游戏开发课程卡片",
+      "notes": "原图为 540 × 404，不放大导出，适合小卡片。",
+      "originalSize": [
+        540,
+        404
+      ],
+      "outputSize": [
+        540,
+        404
+      ],
+      "bytes": 13988
+    },
+    {
+      "file": "/media/soda.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 37,
+      "sourceImage": "ppt/media/image105.png",
+      "description": "SODA 企业 IP 视频封面：森林中的北极熊与人物",
+      "recommendedUse": "企业 IP 形象案例 / 成果展示",
+      "notes": "来源页标题为“企业 ip 形象打造 新加坡 SODA 集团”，仅作为来源已有的企业案例展示。",
+      "originalSize": [
+        3840,
+        2160
+      ],
+      "outputSize": [
+        1200,
+        675
+      ],
+      "bytes": 138940
+    },
+    {
+      "file": "/media/founder.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 3,
+      "sourceImage": "ppt/media/image9.png",
+      "description": "常锦晴：活动现场个人照片",
+      "recommendedUse": "创始人介绍",
+      "notes": "身份依据第 3 页“创始人：同济大学常锦晴”的源文档编排，未使用人脸识别。",
+      "originalSize": [
+        696,
+        1150
+      ],
+      "outputSize": [
+        696,
+        1150
+      ],
+      "bytes": 120116
+    },
+    {
+      "file": "/media/cofounder.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 5,
+      "sourceImage": "ppt/media/image24.jpeg",
+      "description": "肖宇曼：持麦克风讲解的现场照片",
+      "recommendedUse": "联合创始人介绍 / 教学与分享",
+      "notes": "身份依据第 5 页联合创始人肖宇曼的源文档编排。",
+      "originalSize": [
+        1684,
+        1122
+      ],
+      "outputSize": [
+        1200,
+        800
+      ],
+      "bytes": 38490
+    },
+    {
+      "file": "/media/classroom.webp",
+      "sourceFile": "长晴AI0731.pptx",
+      "sourceSlide": 25,
+      "sourceImage": "ppt/media/image75.png",
+      "description": "AI 微电影课堂现场：教师演示与电脑教室",
+      "recommendedUse": "课程实践与课堂卡片",
+      "notes": "嵌入视频封面，原图 544 × 960。仅描述课堂场景，不推断学员身份。",
+      "originalSize": [
+        544,
+        960
+      ],
+      "outputSize": [
+        544,
+        960
+      ],
+      "bytes": 27882
+    }
+  ]
+}

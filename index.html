@@ -1,549 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>上海长晴人工智能科技有限公司 | Changqing AI Technology</title>
-<meta name="description" content="上海长晴人工智能科技有限公司 — 全人群AIGC综合服务生态平台。AI错题集、论文搭子、智能网页平台，覆盖K12亲子科创、高校学术、企业品牌AI营销。"/>
-<style>
-:root{--bg:#0d0b1e;--ink:#f0e6ff;--ink2:#9890b8;--accent:#FFB347;--orange:#FF6B35;--font:'PingFang SC','Noto Sans SC','Microsoft YaHei',system-ui,sans-serif;--safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px)}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:auto;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;font-size:16px;min-height:100%;min-height:100dvh}
-body{overflow-x:hidden;min-width:320px;min-height:100%;min-height:100dvh;overscroll-behavior-x:none}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:linear-gradient(var(--orange),var(--accent));border-radius:2px}
-::selection{background:rgba(255,179,71,.3);color:#fff}
-
-/* Progress */
-.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:100;background:rgba(255,179,71,.08)}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--accent));transition:width .1s linear;box-shadow:0 0 8px rgba(255,179,71,.4);width:0}
-
-/* Topbar */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + var(--safe-top)) max(clamp(16px,5vw,48px),var(--safe-right)) 14px max(clamp(16px,5vw,48px),var(--safe-left));gap:16px;transition:background .3s}
-.topbar.scrolled{background:rgba(13,11,30,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,179,71,.1)}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
-.brand-logo{height:36px;width:auto}
-.brand-text{display:flex;flex-direction:column;line-height:1.2}
-.brand-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.5px;white-space:nowrap}
-.brand-sub{font-size:11px;color:var(--ink2);letter-spacing:.3px;white-space:nowrap}
-.nav-links{display:flex;gap:4px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border-radius:999px;padding:4px;border:1px solid rgba(255,255,255,.08)}
-.nav-links a{font-size:13px;color:var(--ink2);text-decoration:none;padding:6px 14px;border-radius:999px;transition:all .2s;font-weight:500}
-.nav-links a:hover,.nav-links a.active{color:#fff;background:var(--orange)}
-.nav-cta{text-decoration:none;font-weight:600;font-size:13px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--accent));padding:10px 20px;border-radius:999px;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 14px rgba(255,107,53,.25);white-space:nowrap}
-.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(255,107,53,.4)}
-@media(max-width:768px){.nav-links{display:none}.topbar{padding:calc(10px + var(--safe-top)) max(16px,var(--safe-right)) 10px max(16px,var(--safe-left))}.nav-cta{min-height:42px;display:inline-flex;align-items:center;padding:9px 17px}}
-
-/* Stage (video + still layers) */
-.stage{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg);height:100vh;height:100dvh}
-.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;z-index:1;overflow:hidden;background-color:var(--bg);background-image:var(--scene-poster);background-position:center;background-size:cover;transition:opacity .35s ease}
-.scene::before{content:'';position:absolute;inset:-24px;background:var(--scene-poster) center/cover no-repeat;filter:blur(18px) saturate(.86) brightness(.48);transform:scale(1.12);opacity:0;pointer-events:none}
-.scene.active{opacity:1;z-index:10}
-.scene video,.scene img{position:absolute;width:100%;height:100%;object-fit:cover;object-position:center 44%;z-index:1}
-.scene .vignette{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at center,transparent 55%,rgba(13,11,30,.65) 100%);pointer-events:none}
-.scene .gradient{position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(13,11,30,.15) 0%,transparent 30%,transparent 70%,rgba(13,11,30,.4) 100%);pointer-events:none}
-
-/* Copy layer */
-.copy-layer{--copy-shift:0vh;position:fixed;z-index:20;left:clamp(18px,5vw,64px);top:50%;transform:translateY(calc(-50% + var(--copy-shift)));width:min(42vw,460px);pointer-events:none;transition:opacity .5s,transform .5s}
-.copy-layer.hidden{opacity:0}
-.copy-num{font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.12em;color:var(--accent);opacity:.7}
-.copy-eyebrow{display:block;margin-top:12px;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
-.copy-title{font-weight:800;font-size:clamp(1.8rem,3.8vw,3.2rem);line-height:1.06;color:var(--ink);margin:8px 0 0;letter-spacing:-.01em;text-shadow:0 2px 30px rgba(0,0,0,.6);white-space:pre-line}
-.copy-body{margin-top:14px;font-size:clamp(.9rem,1.15vw,1.05rem);line-height:1.65;color:rgba(240,230,255,.72);max-width:38ch;text-shadow:0 1px 20px rgba(0,0,0,.5)}
-.copy-tags{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;padding:0}
-.copy-tags li{font-size:12px;font-weight:600;padding:6px 13px;border-radius:999px;background:rgba(255,179,71,.1);border:1px solid rgba(255,179,71,.2);color:var(--accent);backdrop-filter:blur(4px)}
-.copy-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;pointer-events:auto}
-.cta-primary{text-decoration:none;font-weight:600;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--accent));padding:13px 26px;border-radius:999px;transition:transform .2s;display:inline-block}
-.cta-secondary{text-decoration:none;font-weight:600;font-size:14px;color:var(--ink);border:1.5px solid rgba(255,255,255,.2);padding:13px 26px;border-radius:999px;transition:transform .2s;display:inline-block}
-.cta-primary:hover,.cta-secondary:hover{transform:translateY(-2px)}
-
-/* Product works showcase */
-.product-showcase{position:fixed;z-index:24;right:clamp(68px,6vw,104px);top:50%;transform:translateY(-50%) translateX(24px);width:min(34vw,390px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease,transform .45s ease,visibility .45s}
-.product-showcase.show{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(-50%) translateX(0)}
-.product-showcase__head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:12px;padding:0 4px}
-.product-showcase__eyebrow{display:block;font-size:11px;line-height:1.2;letter-spacing:.14em;color:var(--accent);font-weight:700;text-transform:uppercase;margin-bottom:5px}
-.product-showcase__title{font-size:clamp(1.05rem,1.5vw,1.35rem);line-height:1.2;color:#fff;font-weight:750}
-.product-showcase__hint{font-size:10px;color:var(--ink2);white-space:nowrap}
-.product-list{display:grid;gap:10px}
-.product-card{position:relative;overflow:hidden;padding:15px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(31,25,67,.9),rgba(20,17,47,.74));backdrop-filter:blur(18px);border:1px solid color-mix(in srgb,var(--card-accent) 28%,rgba(255,255,255,.08));box-shadow:0 14px 35px rgba(0,0,0,.2);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
-.product-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--card-accent) 18%,transparent),transparent 48%);pointer-events:none}
-.product-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--card-accent) 58%,transparent);box-shadow:0 18px 42px rgba(0,0,0,.3)}
-.product-card__top{position:relative;display:flex;align-items:center;gap:12px}
-.product-card__icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;color:#fff;font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--card-accent),color-mix(in srgb,var(--card-accent) 56%,#fff));box-shadow:0 7px 18px color-mix(in srgb,var(--card-accent) 24%,transparent)}
-.product-card__name{font-size:15px;color:#fff;font-weight:750;line-height:1.2}
-.product-card__subtitle{display:block;margin-top:3px;color:color-mix(in srgb,var(--card-accent) 72%,#fff);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
-.product-card__desc{position:relative;margin-top:10px;color:rgba(240,230,255,.66);font-size:12px;line-height:1.55}
-.product-card__link{position:relative;margin-top:11px;display:inline-flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-size:12px;font-weight:700;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--card-accent) 82%,#251947);transition:transform .2s ease,filter .2s ease}
-.product-card__link:hover{transform:translateX(2px);filter:brightness(1.1)}
-.product-card__arrow{font-size:15px;line-height:1}
-
-/* Route nav */
-.route{position:fixed;right:clamp(10px,2vw,24px);top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:16px;padding:12px 6px;background:rgba(13,11,30,.25);backdrop-filter:blur(6px);border-radius:999px;border:1px solid rgba(255,255,255,.05)}
-.route-line{position:absolute;left:50%;top:16px;bottom:16px;width:1.5px;transform:translateX(-50%);background:rgba(255,179,71,.2)}
-.route-dot{position:relative;border:0;background:0;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;z-index:1}
-.route-dot i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
-.route-dot.active i{width:10px;height:10px;background:var(--accent);box-shadow:0 0 12px rgba(255,179,71,.5)}
-.route-label{position:absolute;right:22px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:10px;font-weight:600;color:var(--accent);opacity:0;transition:opacity .25s;pointer-events:none}
-.route-dot.active .route-label{opacity:1}
-
-/* Hint */
-.hint{position:fixed;left:50%;bottom:24px;z-index:30;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);transition:opacity .3s;pointer-events:none}
-.hint-wheel{width:20px;height:30px;border-radius:11px;border:2px solid rgba(255,179,71,.25);position:relative}
-.hint-wheel::after{content:'';position:absolute;left:50%;top:5px;width:3px;height:6px;border-radius:2px;background:var(--accent);transform:translateX(-50%);animation:wheel 1.7s ease-in-out infinite}
-@keyframes wheel{0%{opacity:0;top:5px}40%{opacity:1}100%{opacity:0;top:15px}}
-
-/* Contact form */
-.form-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:calc(70px + var(--safe-top)) max(16px,var(--safe-right)) calc(56px + var(--safe-bottom)) max(16px,var(--safe-left));overflow-y:auto;overscroll-behavior:contain;pointer-events:none;opacity:0;transition:opacity .5s}
-.form-overlay.show{opacity:1;pointer-events:auto}
-.form-card{width:min(440px,92vw);max-height:calc(100dvh - 142px - var(--safe-top) - var(--safe-bottom));overflow-y:auto;overscroll-behavior:contain;padding:32px;border-radius:18px;background:rgba(26,20,60,.88);backdrop-filter:blur(24px);border:1px solid rgba(255,179,71,.12);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.form-tabs{display:flex;gap:6px;margin-bottom:22px;justify-content:center;flex-wrap:wrap}
-.form-tab{padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:0;color:var(--ink2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
-.form-tab.sel{border-color:transparent;background:linear-gradient(135deg,var(--orange),var(--accent));color:#fff}
-.f-inp{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#fff;font-size:13px;outline:0;font-family:inherit;width:100%;margin-bottom:10px;transition:border .2s}
-.f-inp:focus,.f-sel:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(255,179,71,.1)}
-.f-sel{padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#fff;font-size:13px;outline:0;font-family:inherit;width:100%;margin-bottom:10px;cursor:pointer;appearance:none}
-.f-submit{width:100%;padding:14px;border-radius:12px;border:0;background:linear-gradient(135deg,var(--orange),var(--accent));color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s;font-family:inherit;margin-top:4px}
-.f-submit:hover{transform:translateY(-1px)}
-.success{text-align:center;padding:20px 0}.success h3{font-size:20px;color:#fff;margin-bottom:6px}.success p{color:var(--ink2);font-size:13px}
-
-/* Footer */
-.footer{position:fixed;bottom:0;left:0;right:0;z-index:25;padding:16px max(clamp(18px,5vw,48px),var(--safe-right)) calc(16px + var(--safe-bottom)) max(clamp(18px,5vw,48px),var(--safe-left));display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.04);background:rgba(13,11,30,.85);backdrop-filter:blur(8px);opacity:0;transition:opacity .3s;pointer-events:none}
-.footer.show{opacity:1;pointer-events:auto}
-.footer span,.footer a{font-size:12px;color:var(--ink2);text-decoration:none}
-
-/* Mobile */
-@media(max-width:860px){
-  .stage{height:100svh;height:100dvh}
-  .scene{background-position:center;background-size:cover}
-  .scene::before{opacity:1}
-  .scene video,.scene img{top:calc(var(--safe-top) + clamp(88px,15dvh,138px));bottom:auto;width:100%;height:clamp(205px,34dvh,360px);object-fit:contain;object-position:center;filter:drop-shadow(0 16px 30px rgba(8,6,24,.28))}
-  .scene .vignette{background:linear-gradient(180deg,rgba(13,11,30,.26) 0%,transparent 18%,transparent 50%,rgba(13,11,30,.7) 76%,rgba(13,11,30,.94) 100%)}
-  .scene .gradient{background:linear-gradient(180deg,rgba(13,11,30,.08) 0%,transparent 42%,rgba(13,11,30,.5) 68%,rgba(13,11,30,.9) 100%)}
-  .copy-layer{left:max(16px,var(--safe-left));right:max(44px,var(--safe-right));top:auto;bottom:max(calc(54px + var(--safe-bottom)),12dvh);transform:translateY(var(--copy-shift));width:auto;max-width:620px;max-height:min(42dvh,390px);overflow-y:auto;overscroll-behavior:contain;padding:4px 5px 6px 0;transition:opacity .35s,transform .35s;scrollbar-width:none}
-  .copy-layer::-webkit-scrollbar{display:none}
-  .copy-title{font-size:clamp(1.55rem,6.4vw,2.25rem);line-height:1.08;margin-top:6px}
-  .copy-eyebrow{margin-top:7px;font-size:clamp(10px,2.8vw,12px)}
-  .copy-body{font-size:clamp(.86rem,3.35vw,.98rem);line-height:1.55;max-width:none;margin-top:9px;white-space:pre-line}
-  .copy-tags{gap:6px;margin-top:11px}
-  .copy-tags li{font-size:clamp(10px,2.7vw,12px);padding:5px 10px}
-  .copy-cta{gap:8px;margin-top:14px}
-  .cta-primary,.cta-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;font-size:13px}
-  .route{left:50%;right:auto;top:calc(var(--safe-top) + 58px);transform:translateX(-50%);flex-direction:row;gap:2px;padding:3px 6px}
-  .route-line{left:16px;right:16px;top:50%;bottom:auto;width:auto;height:1.5px;transform:translateY(-50%)}
-  .route-dot{width:32px;height:32px}
-  .route-label{display:none}
-  .product-showcase{left:0;right:0;top:calc(var(--safe-top) + 96px);width:auto;transform:translateY(-10px);padding:0 max(44px,var(--safe-right)) 0 max(16px,var(--safe-left));overflow:hidden}
-  .product-showcase.show{transform:translateY(0)}
-  .product-showcase__head{margin-bottom:7px;padding:0}
-  .product-showcase__title{font-size:clamp(.94rem,4vw,1.05rem)}
-  .product-showcase__hint{font-size:9px}
-  .product-list{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:max(16px,var(--safe-left));padding:1px max(10px,var(--safe-right)) 9px 0;touch-action:pan-x;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .product-list::-webkit-scrollbar{display:none}
-  .product-card{flex:0 0 min(76vw,310px);min-height:160px;max-height:min(29dvh,205px);overflow-y:auto;scroll-snap-align:start;padding:12px 13px;overscroll-behavior:contain}
-  .product-card__icon{width:34px;height:34px;border-radius:10px;font-size:13px}
-  .product-card__name{font-size:14px}
-  .product-card__desc{font-size:11px;line-height:1.42;margin-top:7px}
-  .product-card__link{min-height:44px;margin-top:7px;padding:8px 13px}
-  .hint{bottom:calc(12px + var(--safe-bottom));font-size:9px;gap:5px}
-  .hint-wheel{width:17px;height:25px}
-  .copy-layer.form-open{opacity:0!important;pointer-events:none}
-  .form-overlay{align-items:flex-start;padding-top:calc(100px + var(--safe-top));padding-bottom:calc(72px + var(--safe-bottom))}
-  .form-card{width:100%;max-width:480px;max-height:calc(100dvh - 172px - var(--safe-top) - var(--safe-bottom));padding:clamp(18px,5vw,26px);border-radius:16px}
-  .form-tabs{margin-bottom:15px}
-  .form-tab{min-height:42px;flex:1 1 30%;padding:7px 9px}
-  .f-inp,.f-sel{min-height:44px;font-size:16px;padding:10px 13px;margin-bottom:8px}
-  .f-submit{min-height:46px}
-  .footer{gap:6px 14px;flex-wrap:wrap;padding:9px max(16px,var(--safe-right)) calc(9px + var(--safe-bottom)) max(16px,var(--safe-left))}
-  .footer span,.footer a{font-size:10px}
-}
-@media(max-width:520px){
-  .brand-logo{height:30px}
-  .brand{gap:7px}
-  .brand-name{font-size:13px}
-  .brand-sub{font-size:8px;max-width:132px;overflow:hidden;text-overflow:ellipsis}
-  .nav-cta{font-size:12px;padding-inline:14px}
-  .product-card{flex-basis:min(80vw,300px)}
-}
-@media(max-width:380px){
-  .brand-sub{max-width:105px}
-  .nav-cta{padding-inline:12px}
-  .copy-layer{right:max(40px,var(--safe-right))}
-  .copy-title{font-size:1.48rem}
-  .copy-tags li{padding-inline:8px}
-  .route-dot{width:29px;height:29px}
-}
-@media(max-width:860px) and (max-height:700px){
-  .scene video,.scene img{top:calc(var(--safe-top) + 86px);height:clamp(180px,32dvh,225px)}
-  .copy-layer{bottom:max(calc(48px + var(--safe-bottom)),8dvh);max-height:42dvh}
-  .copy-title{font-size:clamp(1.35rem,5.7vw,1.85rem)}
-  .copy-body{font-size:clamp(.78rem,3vw,.9rem);line-height:1.42;margin-top:6px}
-  .copy-tags{margin-top:8px}
-  .copy-tags li{padding-block:4px}
-  .product-showcase{top:calc(var(--safe-top) + 91px)}
-  .product-showcase__head{margin-bottom:4px}
-  .product-card{min-height:145px;max-height:26dvh;padding:10px 12px}
-  .product-card__desc{line-height:1.35;margin-top:5px}
-  .product-card__link{min-height:40px;margin-top:5px}
-  .form-overlay{padding-top:calc(86px + var(--safe-top));padding-bottom:calc(58px + var(--safe-bottom))}
-  .form-card{max-height:calc(100dvh - 144px - var(--safe-top) - var(--safe-bottom));padding:16px}
-}
-@media(max-width:860px) and (orientation:landscape){
-  .topbar{padding-top:calc(7px + var(--safe-top));padding-bottom:7px}
-  .brand-logo{height:27px}
-  .brand-sub{display:none}
-  .nav-cta{min-height:38px;padding-block:7px}
-  .route{left:auto;right:max(6px,var(--safe-right));top:50%;transform:translateY(-50%);flex-direction:column;gap:0;padding:3px}
-  .route-line{left:50%;right:auto;top:12px;bottom:12px;width:1.5px;height:auto;transform:translateX(-50%)}
-  .route-dot{width:29px;height:29px}
-  .scene video,.scene img{left:max(12px,var(--safe-left));top:calc(var(--safe-top) + 54px);width:54vw;height:calc(100dvh - 72px - var(--safe-top) - var(--safe-bottom));object-position:center}
-  .copy-layer{left:auto;right:max(48px,var(--safe-right));bottom:max(44px,var(--safe-bottom));width:40vw;max-height:calc(100dvh - 102px - var(--safe-top) - var(--safe-bottom));padding-right:3px}
-  .copy-title{font-size:clamp(1.25rem,3.6vw,1.75rem)}
-  .copy-eyebrow{font-size:9px}
-  .copy-body{font-size:clamp(.72rem,1.8vw,.86rem);line-height:1.38}
-  .copy-tags{gap:4px;margin-top:7px}
-  .copy-tags li{font-size:9px;padding:3px 7px}
-  .copy-cta{margin-top:8px}
-  .cta-primary,.cta-secondary{min-height:38px;padding:7px 12px;font-size:11px}
-  .product-showcase{left:max(12px,var(--safe-left));right:auto;top:calc(var(--safe-top) + 58px);width:52vw;padding:0;overflow:hidden}
-  .product-showcase__head{margin-bottom:4px}
-  .product-card{flex-basis:min(42vw,290px);min-height:132px;max-height:calc(100dvh - 115px - var(--safe-top) - var(--safe-bottom))}
-  .product-card__link{min-height:38px}
-  .hint{display:none}
-  .form-overlay{align-items:flex-start;padding:calc(56px + var(--safe-top)) max(50px,var(--safe-right)) calc(44px + var(--safe-bottom)) max(12px,var(--safe-left))}
-  .form-card{margin-left:auto;width:48vw;max-height:calc(100dvh - 100px - var(--safe-top) - var(--safe-bottom));padding:14px}
-  .form-tabs{margin-bottom:8px}
-  .form-tab{min-height:36px}
-  .f-inp,.f-sel{min-height:39px;padding-block:7px;margin-bottom:5px}
-  .f-submit{min-height:40px;padding:9px}
-  .footer{padding-top:5px;padding-bottom:calc(5px + var(--safe-bottom))}
-}
-@media(hover:none) and (pointer:coarse){.route-dot{min-width:32px;min-height:32px}.product-card:hover{transform:none}}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.scene video{display:none!important}}
-</style>
-</head>
-<body>
-
-<div class="progress"><div class="progress-fill" id="pf"></div></div>
-
-<nav class="topbar" id="tb">
-  <a href="#" class="brand"><img class="brand-logo" src="assets/logo.png" alt="长晴AI" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="brand-text" style="display:none"><span style="font-size:18px;font-weight:700">长晴AI</span><span style="font-size:11px;color:#9890b8">Changqing AI</span></div><div class="brand-text"><span class="brand-name">长晴AI</span><span class="brand-sub">Changqing AI Technology</span></div></a>
-  <div class="nav-links" id="nl"></div>
-  <a href="#contact" class="nav-cta">立即咨询</a>
-</nav>
-
-<div class="stage" id="stage"></div>
-
-<div class="copy-layer hidden" id="cl"></div>
-<div class="product-showcase" id="productShowcase" aria-hidden="true"></div>
-<div class="route" id="rt"><div class="route-line"></div></div>
-<div class="hint" id="hint"><span>向下滚动探索</span><div class="hint-wheel"></div></div>
-
-<div class="form-overlay" id="fo"><div class="form-card" id="fc"></div></div>
-
-<footer class="footer" id="ft">
-  <span>© 2026 上海长晴人工智能科技有限公司</span>
-  <div style="display:flex;gap:18px"><a href="#">首页</a><a href="#">产品</a><a href="#">联系</a></div>
-</footer>
-
-<div id="track" style="position:relative;z-index:1;width:100%;pointer-events:none"></div>
-
-<script>
-// ===================== Data =====================
-const SECTIONS = [
-  {id:'hero',label:'首页',accent:'#FF6B35',
-   eyebrow:'全人群 AIGC 综合服务生态平台',title:'点亮未来，赋能成长',
-   body:'AIGC 工具 + 素养教学 + 企业 AI 产品交付\n授之以鱼，也授之以渔',
-   tags:['AI教育','自研工具','成品交付'],
-   cta:{primary:{label:'预约体验课',href:'#contact'},secondary:{label:'探索产品',href:'#products'}},
-   hasVideo:true},
-  {id:'pain',label:'方案',accent:'#4A90D9',
-   eyebrow:'两端痛点，一站解决',title:'教育端 × 商业端\n双线闭环',
-   body:'企业缺一站式AI交付团队，教育端课程与工具割裂——长晴AI以自研工具底座+课程体系+成品交付形成完整闭环。',
-   tags:['六维闭环','授之以渔+授之以鱼'],hasVideo:true},
-  {id:'products',label:'产品',accent:'#FFB347',
-   eyebrow:'自研 AI 工具矩阵',title:'五大核心产品',
-   body:'论文搭子 · 错题集 · 智能网页平台 · 手势实验岛 · 三维世界实验室——覆盖教学、学术、品牌全场景。',
-   tags:['论文搭子','错题集','智能网页','手势实验','3D世界'],hasVideo:true},
-  {id:'courses',label:'课程',accent:'#10B981',
-   eyebrow:'六大 AIGC 科创课程 · Stage 1–6',title:'从感知体验到\n项目实践',
-   body:'《人工智能+教育行动计划》教科信〔2026〕1号，分层递进标准化课程体系，覆盖微电影/建模/机器人/手势/虚拟人/游戏。',
-   tags:['AI微电影','AI建模','AI机器人','手势互动','虚拟助理','游戏开发'],hasVideo:true},
-  {id:'cases',label:'案例',accent:'#FFB347',
-   eyebrow:'服务 1200+ 人次 | 满课率 92% | 满意度 95%',title:'用成果说话',
-   body:'宋庆龄少年儿童发明奖国赛银奖、全球发明大会全国一等奖、多名学生入选"未来科学家"培养计划。',
-   tags:['竞赛成果','企业交付','渠道合作'],hasVideo:true},
-  {id:'team',label:'团队',accent:'#8B5CF6',
-   eyebrow:'同济/复旦/上交 名校团队',title:'全栈技术+教育\n+商业',
-   body:'7人核心团队，独家IP——南天门计划、安全熊、LadyBoss女企业家平台。',
-   tags:['核心团队','南天门计划','安全熊','LadyBoss'],hasVideo:false},
-  {id:'contact',label:'联系',accent:'#FF6B35',
-   eyebrow:'与长晴AI同行',title:'准备好启程了吗？',
-   body:'无论是体验课程、产品试用还是商务合作，我们都在这里。',
-   cta:{primary:{label:'立即咨询',href:'#contact'},secondary:{label:'了解更多',href:'#products'}},
-   hasVideo:false},
-];
-const N = SECTIONS.length;
-const DIVE_VH = 1.6, CONN_VH = 0.5;
-
-const PRODUCT_WORKS = [
-  {
-    name:'论文搭子',subtitle:'Thesis Buddy',icon:'论',accent:'#8B5CF6',
-    description:'面向本硕博全阶段，覆盖选题、文献检索、知识图谱、分阶段写作、查错降重与答辩准备。',
-    url:'https://mycryjmnznhs.sealoshzh.site'
-  },
-  {
-    name:'手势实验',subtitle:'Gesture Lab',icon:'势',accent:'#10B981',
-    description:'通过摄像头识别手势，用动作驱动粒子和虚拟场景，体验实时人机交互与创意表达。',
-    url:'https://azncqrmjxtjw.sealoshzh.site'
-  },
-  {
-    name:'3D 世界',subtitle:'Video to 3D World',icon:'3D',accent:'#F59E0B',
-    description:'将二维视频转换成可探索的三维世界，体验从影像素材到沉浸式空间的智能生成。',
-    url:'https://video2gauss.sealoshzh.site'
-  }
-];
-
-// ===================== DOM =====================
-const stage = document.getElementById('stage');
-const cl = document.getElementById('cl');
-const rt = document.getElementById('rt');
-const nl = document.getElementById('nl');
-const tb = document.getElementById('tb');
-const ft = document.getElementById('ft');
-const fo = document.getElementById('fo');
-const fc = document.getElementById('fc');
-const pf = document.getElementById('pf');
-const hint = document.getElementById('hint');
-const track = document.getElementById('track');
-const productShowcase = document.getElementById('productShowcase');
-
-productShowcase.innerHTML = `
-  <div class="product-showcase__head">
-    <div><span class="product-showcase__eyebrow">Live Products</span><h3 class="product-showcase__title">探索我们的作品</h3></div>
-    <span class="product-showcase__hint">点击进入产品 ↗</span>
-  </div>
-  <div class="product-list">
-    ${PRODUCT_WORKS.map(product => `
-      <article class="product-card" style="--card-accent:${product.accent}">
-        <div class="product-card__top">
-          <span class="product-card__icon">${product.icon}</span>
-          <div><h4 class="product-card__name">${product.name}</h4><span class="product-card__subtitle">${product.subtitle}</span></div>
-        </div>
-        <p class="product-card__desc">${product.description}</p>
-        <a class="product-card__link" href="${product.url}" target="_blank" rel="noopener noreferrer" aria-label="打开${product.name}">
-          立即体验 <span class="product-card__arrow">↗</span>
-        </a>
-      </article>
-    `).join('')}
-  </div>`;
-
-// Build scenes
-const scenes = [];
-SECTIONS.forEach((s,i) => {
-  const div = document.createElement('div'); div.className = 'scene';
-  div.style.setProperty('--scene-poster', `url("assets/${s.id}.webp")`);
-  if (s.hasVideo) {
-    div.innerHTML = `<img src="assets/${s.id}.webp" alt="" loading="eager" decoding="async"><video muted playsinline preload="auto" loop style="display:none"></video><div class="vignette"></div><div class="gradient"></div>`;
-  } else {
-    div.innerHTML = `<img src="assets/${s.id}.webp" alt="" loading="eager" decoding="async"><div class="vignette"></div><div class="gradient"></div>`;
-  }
-  stage.appendChild(div);
-  scenes.push({ el: div, video: div.querySelector('video'), img: div.querySelector('img'), loaded: false, painted: false, blobUrl: null });
-});
-
-// Load video as Blob (scroll-world method - always seekable)
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-SECTIONS.forEach((s,i) => {
-  if (!s.hasVideo || reduceMotion) return;
-  const url = 'assets/vid/dive_' + s.id + '.mp4';
-  fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('Video unavailable'))).then(blob => {
-    const blobUrl = URL.createObjectURL(blob);
-    const v = scenes[i].video;
-    v.src = blobUrl;
-    v.load();
-    v.addEventListener('loadedmetadata', () => {
-      scenes[i].loaded = true;
-      read();
-    }, { once:true });
-    v.addEventListener('loadeddata', () => {
-      scenes[i].painted = true;
-      read();
-    }, { once:true });
-    v.addEventListener('error', () => {
-      scenes[i].loaded = false;
-      scenes[i].painted = false;
-      v.style.display = 'none';
-    });
-    scenes[i].blobUrl = blobUrl;
-  }).catch(() => {});
-});
-
-// Build nav + route
-const NAV_LABELS = ['首页','方案','产品','课程','案例','团队','联系'];
-NAV_LABELS.forEach((l,i) => {
-  const a = document.createElement('a'); a.textContent = l; a.href = '#' + SECTIONS[i].id;
-  a.onclick = e => { e.preventDefault(); jumpTo(i); };
-  nl.appendChild(a);
-  const d = document.createElement('button'); d.className = 'route-dot';
-  d.innerHTML = '<i></i><span class="route-label">' + l + '</span>';
-  d.onclick = () => jumpTo(i);
-  rt.appendChild(d);
-});
-
-// Contact form
-function renderForm() {
-  fc.innerHTML = `
-    <div class="form-tabs">
-      <button class="form-tab sel" id="ft1">预约体验课</button>
-      <button class="form-tab" id="ft2">合作咨询</button>
-      <button class="form-tab" id="ft3">产品试用</button>
-    </div>
-    <div id="ff"></div>`;
-  let tab = 'trial';
-  document.getElementById('ft1').onclick = () => switchTab('trial');
-  document.getElementById('ft2').onclick = () => switchTab('coop');
-  document.getElementById('ft3').onclick = () => switchTab('prod');
-  showFields('trial');
-}
-function switchTab(t) {
-  document.querySelectorAll('.form-tab').forEach(b => b.classList.remove('sel'));
-  document.getElementById(t === 'trial' ? 'ft1' : t === 'coop' ? 'ft2' : 'ft3').classList.add('sel');
-  showFields(t);
-}
-function showFields(t) {
-  const el = document.getElementById('ff');
-  if (t === 'trial') el.innerHTML = '<input class="f-inp" placeholder="学生姓名" required><input class="f-inp" placeholder="年级"><input class="f-inp" type="tel" placeholder="家长手机号" required><select class="f-sel"><option>选择课程</option><option>AI微电影</option><option>AI建模</option><option>AI机器人</option><option>AI粒子手势互动</option><option>AI虚拟形象助理</option><option>AI小游戏开发</option></select>';
-  else if (t === 'coop') el.innerHTML = '<input class="f-inp" placeholder="单位/机构名称" required><input class="f-inp" placeholder="联系人" required><input class="f-inp" type="tel" placeholder="联系电话" required><select class="f-sel"><option>合作类型</option><option>学校/教育机构</option><option>企业品牌合作</option><option>渠道合作</option><option>IP联名合作</option></select>';
-  else el.innerHTML = '<input class="f-inp" placeholder="姓名" required><input class="f-inp" placeholder="手机号/邮箱" required><select class="f-sel"><option>选择产品</option><option>论文搭子</option><option>错题集</option><option>智能网页平台</option><option>手势实验岛</option><option>三维世界实验室</option></select>';
-  el.innerHTML += '<button class="f-submit" onclick="submitForm()">提交</button>';
-}
-function submitForm() {
-  fc.innerHTML = '<div class="success"><div style="font-size:40px;margin-bottom:12px">🎉</div><h3>提交成功！</h3><p>我们将在24小时内与您联系。</p></div>';
-  setTimeout(() => { fo.classList.remove('show'); setTimeout(renderForm, 500); }, 3000);
-}
-renderForm();
-
-// ===================== Scroll Engine =====================
-let vh = window.innerHeight, totalH = 0, activeIdx = -1, ticking = false;
-
-function layout() {
-  vh = window.innerHeight;
-  let seg = 0;
-  for (let i = 0; i < N; i++) { seg += DIVE_VH; if (i < N - 1) seg += CONN_VH; }
-  totalH = seg * vh + vh * 0.5;
-  track.style.height = totalH + 'px';
-  read();
-}
-
-function lingerEase(x, L) { if (L <= 0) return x; const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); }
-
-function read() {
-  const y = window.scrollY, maxS = totalH - vh;
-  const progress = maxS > 0 ? Math.min(1, Math.max(0, y / maxS)) : 0;
-  pf.style.width = (progress * 100) + '%';
-
-  const rawIdx = progress * N;
-  const si = Math.min(Math.floor(rawIdx), N - 1);
-  const segS = si / N, segE = (si + 1) / N;
-  const raw = (progress - segS) / (segE - segS);
-  const sp = lingerEase(Math.min(1, Math.max(0, raw)), 0.45);
-
-  // Update scene videos - ONLY show active scene
-  scenes.forEach((sc, i) => {
-    const active = i === si;
-
-    if (active) {
-      sc.el.classList.add('active');
-    } else {
-      sc.el.classList.remove('active');
-    }
-
-    // Video scrubbing
-    if (sc.video && sc.loaded && sc.video.duration) {
-      if (active) {
-        sc.video.style.display = 'block';
-        if (!sc.video.seeking) {
-          const t = Math.min(sp, 0.99) * sc.video.duration;
-          if (Math.abs(sc.video.currentTime - t) > 0.06) {
-            sc.video.currentTime = t;
-          }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta name="color-scheme" content="light" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="author" content="上海长序逢晴智能科技有限公司" />
+    <title>长晴AI · 让每一个想象都有晴天 | 上海长序逢晴智能科技有限公司</title>
+    <meta
+      name="description"
+      content="长晴AI，以自研AI工具连接素养教学与成品交付。探索青少年科技素养、成人企业培训、职业培训项目与机器人研学，了解产品与真实创作。联系常老师：17821821196。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="长晴AI" />
+    <meta property="og:title" content="长晴AI · 让每一个想象都有晴天" />
+    <meta
+      property="og:description"
+      content="上海长序逢晴智能科技有限公司。AI素养教学、自研工具、企业共创与成品交付。"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="长晴AI · 让每一个想象都有晴天" />
+    <meta
+      name="twitter:description"
+      content="AI素养教学、自研工具、企业共创与成品交付。"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "上海长序逢晴智能科技有限公司",
+        "alternateName": "长晴AI",
+        "description": "AI素养教学、自研工具与成品交付",
+        "telephone": "+86-17821821196",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+86-17821821196",
+          "contactType": "课程与合作咨询",
+          "availableLanguage": "Chinese"
         }
-        if (sc.video.paused) sc.video.play().catch(() => {});
-      } else {
-        sc.video.style.display = 'none';
-        if (!sc.video.paused) sc.video.pause();
       }
-    } else if (sc.video) {
-      sc.video.style.display = 'none';
-    }
-    // Keep the still visible until the active video's first frame is available.
-    if (sc.img) {
-      sc.img.style.display = (active && !(sc.video && sc.loaded && sc.painted)) ? 'block' : 'none';
-    }
-  });
-
-  // Copy layer
-  if (si !== activeIdx) {
-    activeIdx = si;
-    const s = SECTIONS[si];
-    let h = '<span class="copy-num">' + String(si + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0') + '</span>';
-    if (s.eyebrow) h += '<span class="copy-eyebrow">' + s.eyebrow + '</span>';
-    h += '<h2 class="copy-title">' + s.title + '</h2>';
-    if (s.body) h += '<p class="copy-body">' + s.body + '</p>';
-    if (s.tags) h += '<ul class="copy-tags">' + s.tags.map(t => '<li>' + t + '</li>').join('') + '</ul>';
-    if (s.cta) h += '<div class="copy-cta">' + (s.cta.primary ? '<a class="cta-primary" href="' + s.cta.primary.href + '">' + s.cta.primary.label + '</a>' : '') + (s.cta.secondary ? '<a class="cta-secondary" href="' + s.cta.secondary.href + '">' + s.cta.secondary.label + '</a>' : '') + '</div>';
-    cl.innerHTML = h;
-
-    // Update nav + route dots
-    nl.querySelectorAll('a').forEach((a, j) => a.classList.toggle('active', j === si));
-    rt.querySelectorAll('.route-dot').forEach((d, j) => d.classList.toggle('active', j === si));
-  }
-
-  const cop = sp < 0.12 ? sp / 0.12 : sp > 0.88 ? (1 - sp) / 0.12 : 1;
-  cl.classList.toggle('hidden', cop < 0.04);
-  cl.style.opacity = cop;
-  cl.style.setProperty('--copy-shift', ((sp - 0.5) * 3) + 'vh');
-
-  const productOpacity = si === 2 ? Math.min(1, Math.max(0, Math.min(sp / 0.18, (1 - sp) / 0.12))) : 0;
-  productShowcase.classList.toggle('show', productOpacity > 0.04);
-  productShowcase.style.opacity = productOpacity;
-  productShowcase.setAttribute('aria-hidden', productOpacity > 0.04 ? 'false' : 'true');
-
-  hint.style.opacity = Math.max(0, 1 - progress * 4);
-  tb.classList.toggle('scrolled', y > 80);
-
-  const showForm = si === N - 1 && sp > 0.5;
-  fo.classList.toggle('show', showForm);
-  cl.classList.toggle('form-open', showForm);
-
-  const showFooter = si >= N - 1 && sp > 0.3;
-  ft.classList.toggle('show', showFooter);
-  ft.style.opacity = Math.max(0, showFooter ? Math.min(1, (sp - 0.3) / 0.7) : 0);
-
-  ticking = false;
-}
-
-window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(read); } }, { passive: true });
-
-function jumpTo(i) {
-  // Calculate scroll position for this scene's start
-  const segS = i / N;
-  const y = segS * totalH + vh * 0.15;
-  window.scrollTo({ top: y, behavior: 'smooth' });
-}
-
-// Resize
-let lastW = window.innerWidth, lastH = window.innerHeight;
-window.addEventListener('resize', () => {
-  const widthChanged = window.innerWidth !== lastW;
-  const heightChanged = Math.abs(window.innerHeight - lastH) > 120;
-  if (widthChanged || heightChanged) {
-    lastW = window.innerWidth;
-    lastH = window.innerHeight;
-    layout();
-  }
-});
-window.addEventListener('orientationchange', () => setTimeout(layout, 120));
-window.addEventListener('load', layout);
-layout();
-</script>
-</body>
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript
+      ><main
+        style="
+          max-width: 760px;
+          margin: 40px auto;
+          padding: 24px;
+          font: 16px/1.8 system-ui;
+          color: #25382b;
+        "
+      >
+        <h1>长晴AI · 让每一个想象都有晴天</h1>
+        <p>
+          上海长序逢晴智能科技有限公司。以自研工具为底座，连接素养教学与成品交付，让每个人成为AI时代的创造者。
+        </p>
+        <h2>四大课程体系</h2>
+        <ul>
+          <li>
+            青少年科技素养：微电影、三维建模、手势互动、虚拟形象、小游戏、机器人。
+          </li>
+          <li>成人与企业培训：AI通识、视频创作、新员工与分岗位培训。</li>
+          <li>
+            职业培训项目：训练师、数据标注与模型运用，目前处于拟申报阶段。
+          </li>
+          <li>机器人研学：半日与一日项目。</li>
+        </ul>
+        <h2>产品与合作</h2>
+        <p>
+          论文搭子、AI错题集、智能网页、手势实验、三维创作；提供学校课程共建、企业AI培训及品牌内容交付。
+        </p>
+        <p>
+          开启JavaScript可浏览三维园区、课程详情与作品。也可以直接联系：<a
+            href="tel:17821821196"
+            >常老师 17821821196</a
+          >。
+        </p>
+      </main></noscript
+    >
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

@@ -1,0 +1,17 @@
+.git
+.github
+node_modules
+dist
+work
+assets
+docs
+scripts
+outputs
+.env
+.env.*
+*.log
+generate.mjs
+generator.html
+video-gen.js
+world.js
+src/scrub-engine.js
