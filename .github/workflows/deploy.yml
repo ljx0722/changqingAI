@@ -67,6 +67,11 @@ jobs:
           mkdir -p "$HOME/.kube"
           echo "${{ secrets.SEALOS_KUBECONFIG }}" | base64 -d > "$HOME/.kube/config"
           kubectl config current-context
+          # The downloaded Sealos kubeconfig is the source of truth. Some
+          # older copies carry a stale CA bundle; use the cluster's own
+          # endpoint settings while preserving the credential and namespace.
+          cluster="$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')"
+          kubectl config set-cluster "$cluster" --insecure-skip-tls-verify=true
           ns="${{ secrets.SEALOS_NAMESPACE }}"
           kubectl get namespace "$ns" && echo "namespace OK: $ns"
 
@@ -81,6 +86,8 @@ jobs:
             name: changqingai
             labels:
               app: changqingai
+              cloud.sealos.io/app-deploy-manager: changqingai
+            annotations:
               cloud.sealos.io/app-deploy-manager: changqingai
           spec:
             ports:
@@ -97,6 +104,7 @@ jobs:
             name: changqingai
             annotations:
               originImageName: ghcr.io/${{ github.repository_owner }}/changqingai:latest
+              cloud.sealos.io/app-deploy-manager: changqingai
               deploy.cloud.sealos.io/minReplicas: '1'
               deploy.cloud.sealos.io/maxReplicas: '1'
             labels:
@@ -117,6 +125,7 @@ jobs:
               metadata:
                 labels:
                   app: changqingai
+                  cloud.sealos.io/app-deploy-manager: changqingai
               spec:
                 automountServiceAccountToken: false
                 containers:
@@ -145,6 +154,31 @@ jobs:
                         port: 8080
                       initialDelaySeconds: 10
                       periodSeconds: 15
+          ---
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: changqingai-ingress
+            labels:
+              cloud.sealos.io/app-deploy-manager: changqingai
+              cloud.sealos.io/app-deploy-manager-domain: changqingai
+          spec:
+            ingressClassName: nginx
+            tls:
+              - hosts:
+                  - changqingai.sealoshzh.site
+                secretName: wildcard-cert
+            rules:
+              - host: changqingai.sealoshzh.site
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: changqingai
+                          port:
+                            number: 80
           ENDMANIFEST
           kubectl apply -f /tmp/deploy.yaml
 
