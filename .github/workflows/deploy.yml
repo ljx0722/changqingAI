@@ -67,11 +67,6 @@ jobs:
           mkdir -p "$HOME/.kube"
           echo "${{ secrets.SEALOS_KUBECONFIG }}" | base64 -d > "$HOME/.kube/config"
           kubectl config current-context
-          # The downloaded Sealos kubeconfig is the source of truth. Some
-          # older copies carry a stale CA bundle; use the cluster's own
-          # endpoint settings while preserving the credential and namespace.
-          cluster="$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')"
-          kubectl config set-cluster "$cluster" --insecure-skip-tls-verify=true
           ns="${{ secrets.SEALOS_NAMESPACE }}"
           kubectl get namespace "$ns" && echo "namespace OK: $ns"
 
